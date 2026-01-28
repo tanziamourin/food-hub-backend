@@ -26,30 +26,7 @@ export const auth = betterAuth({
     trustedOrigins: [process.env.APP_URL!],
 
 
-    databaseHooks: {
-        user: {
-            create: {
-                before: async (user) => {
-                    if (user.role === "ADMIN" && process.env.ALLOW_ADMIN_SIGNUP !== "true") {
-                        throw new Error("ADMIN signup is not allowed");
-                    }
-
-                    // extra safety: force default
-                    if (!user.role) {
-                        user.role = "CUSTOMER";
-                    }
-
-                    return {
-                        data: user,
-                    };
-                },
-            },
-        },
-    },
-
-
-    // User extra fields
-    
+   
     user: {
         additionalFields: {
             role: {
@@ -69,7 +46,7 @@ export const auth = betterAuth({
         },
     },
 
-    // Email + Password Auth
+    // Email and Password Auth
    
     emailAndPassword: {
         enabled: true,
@@ -86,7 +63,7 @@ export const auth = betterAuth({
 
         sendVerificationEmail: async ({ user, url, token }) => {
             await transporter.sendMail({
-                from: `"Healio" <no-reply@healio.com>`,
+                from: `"Food Hub " <food-hub@gmail.com>`,
                 to: user.email!,
                 subject: "Verify your email address",
                 html: `
@@ -98,9 +75,8 @@ export const auth = betterAuth({
         },
     },
 
-    // ================================
     // Social Login
-    // ================================
+
     socialProviders: {
         google: {
             prompt: "select_account consent",

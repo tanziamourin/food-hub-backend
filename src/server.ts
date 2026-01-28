@@ -1,5 +1,3 @@
-
-// import app from "./app";
 import app from "./app";
 import { prisma } from "./lib/prisma";
 

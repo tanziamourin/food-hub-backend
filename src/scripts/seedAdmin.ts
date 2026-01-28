@@ -3,11 +3,11 @@ import { prisma } from "../lib/prisma";
 import { auth } from "../lib/auth";
 
 async function seedAdmin() {
-    console.log("******** Admin Seeding Started ********");
+    console.log("Admin Seeding Started ");
 
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@admin.com";
-    const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
-    const adminName = process.env.ADMIN_NAME || "Admin User";
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@foodhub.com";
+    const adminPassword = process.env.ADMIN_PASSWORD || "Admin@12345";
+    const adminName = process.env.ADMIN_NAME || "Admin ";
 
     try {
         //  if admin already exists
@@ -15,17 +15,14 @@ async function seedAdmin() {
             where: { email: adminEmail },
         });
 
-        // DELETE existing admin to ensure fresh start (cleanup previous bad data)
+        // DELETE 
         if (existingAdmin) {
-            console.log("Admin already exists. Deleting for fresh seed...");
+            console.log("Admin already exists. Deleting existing admin...");
             await prisma.user.delete({
                 where: { email: adminEmail },
             });
         }
 
-        // Create admin using Better Auth API to ensure correct hashing/account setup
-        // Note: Using signUpEmail will trigger verification emails if enabled,
-        // so we manually mark it as verified afterwards.
         await auth.api.signUpEmail({
             body: {
                 email: adminEmail,
@@ -36,7 +33,7 @@ async function seedAdmin() {
             }
         });
 
-        // Manually mark as verified
+       
         await prisma.user.update({
             where: { email: adminEmail },
             data: { emailVerified: true }

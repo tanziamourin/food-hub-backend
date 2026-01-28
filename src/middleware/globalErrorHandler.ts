@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Prisma } from "../../generated/prisma/client";
 
-// ================================
 // Global Error Handler
-// ================================
+
 function errorHandler(
     err: any,
     req: Request,
@@ -14,18 +13,17 @@ function errorHandler(
     let message = err.message || "Internal Server Error";
     let details: any = null;
 
-    // ================================
-    // Prisma Validation Error
-    // ================================
+    // Prisma Errors Handling ----- start from here -----
+    //  Validation Error
+
     if (err instanceof Prisma.PrismaClientValidationError) {
         statusCode = 400;
         message = "Invalid request data";
         details = err.message;
     }
 
-    // ================================
-    // Prisma Known Request Errors
-    // ================================
+    //  Known Request Errors
+
     else if (err instanceof Prisma.PrismaClientKnownRequestError) {
         switch (err.code) {
             case "P2002":
@@ -53,36 +51,36 @@ function errorHandler(
         }
     }
 
-    // ================================
-    // Prisma Unknown Error
-    // ================================
+
+    //  Unknown Error
+
     else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
         statusCode = 500;
         message = "Unknown database error occurred";
         details = err.message;
     }
 
-    // ================================
-    // Prisma Rust Panic Error
-    // ================================
+
+    //  Rust Panic Error
+
     else if (err instanceof Prisma.PrismaClientRustPanicError) {
         statusCode = 500;
         message = "Critical database error (Rust panic)";
         details = err.message;
     }
 
-    // ================================
-    // Prisma Initialization Error
-    // ================================
+
+    //  Initialization Error
+
     else if (err instanceof Prisma.PrismaClientInitializationError) {
         statusCode = 500;
         message = "Failed to initialize database connection";
         details = err.message;
     }
 
-    // ================================
+
     // Response
-    // ================================
+
     res.status(statusCode).json({
         success: false,
         message,

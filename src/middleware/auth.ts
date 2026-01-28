@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { auth } from "../lib/auth";
 
 
-// User Roles (MATCH PRISMA + AUTH)
+// user roles
 
 export enum UserRole {
     ADMIN = "ADMIN",
@@ -11,7 +11,7 @@ export enum UserRole {
 }
 
 
-// Extend Express Request
+//  Express Request
 
 declare global {
     namespace Express {
@@ -34,12 +34,12 @@ declare global {
 const authorize = (...roles: UserRole[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // Get session from Better Auth
+            // session from Better Auth
             const session = await auth.api.getSession({
                 headers: req.headers as any,
             });
 
-            // Not authenticated
+            //  Unauthenticated
             if (!session || !session.user) {
                 return res.status(401).json({ message: "Unauthorized" });
             }
@@ -49,10 +49,9 @@ const authorize = (...roles: UserRole[]) => {
                 return res.status(403).json({ message: "Email not verified" });
             }
 
-            // Cast user to any to access additional fields or use a specific type
             const user = session.user as any;
 
-            // SUSPENDED user
+            // SUSPENDED 
             if (user.status === "SUSPENDED") {
                 return res.status(403).json({ message: "User is SUSPENDED by admin" });
             }

@@ -22,9 +22,6 @@ app.use(express.json());
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
 
-app.get("/health", (_req, res) => {
-    res.status(200).send("OK");
-});
 
 
 app.get("/", (_req, res) => {
