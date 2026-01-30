@@ -51,7 +51,7 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         autoSignIn: false,
-        requireEmailVerification: true,
+        requireEmailVerification: false,
     },
 
   
@@ -62,6 +62,7 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
 
         sendVerificationEmail: async ({ user, url, token }) => {
+          
             await transporter.sendMail({
                 from: `"Food Hub " <food-hub@gmail.com>`,
                 to: user.email!,
@@ -75,14 +76,14 @@ export const auth = betterAuth({
         },
     },
 
-    // Social Login
-
     socialProviders: {
         google: {
             prompt: "select_account consent",
             accessType: "offline",
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            callbackUrl: `${process.env.APP_URL}/api/auth/callback/google`
         },
-    },
+    }
+   
 });

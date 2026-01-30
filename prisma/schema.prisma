@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -11,31 +5,24 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+
 }
-
-// generator client {
-//   provider = "prisma-client-js"
-// }
-
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
 
 model User {
   id              String           @id @default(uuid())
   name            String
   email           String           @unique
-  role            Role
+  role            Role             @default(CUSTOMER)
   status          UserStatus       @default(ACTIVE)
   emailVerified   Boolean          @default(false)
+  image           String?
+  phone           String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+
   providerProfile ProviderProfile?
   orders          Order[]
   reviews         Review[]
-  image           String?
-  phone           String?
   sessions        Session[]
   accounts        Account[]
 
@@ -54,7 +41,8 @@ model ProviderProfile {
 
 model Category {
   id    String @id @default(uuid())
-  name  String
+  name  String @unique
+
   meals Meal[]
 }
 
@@ -63,6 +51,7 @@ model Meal {
   name        String
   description String
   price       Float
+  image       String?
 
   providerId String
   categoryId String
@@ -70,15 +59,31 @@ model Meal {
   provider ProviderProfile @relation(fields: [providerId], references: [id])
   category Category        @relation(fields: [categoryId], references: [id])
   reviews  Review[]
+  orderItems OrderItem[]
 }
 
 model Order {
-  id         String      @id @default(uuid())
-  customerId String
-  status     OrderStatus @default(PLACED)
-  createdAt  DateTime    @default(now())
+  id              String      @id @default(uuid())
+  customerId      String
+  status          OrderStatus @default(PLACED)
+  deliveryAddress String
+  createdAt       DateTime    @default(now())
 
-  customer User @relation(fields: [customerId], references: [id])
+  customer  User        @relation(fields: [customerId], references: [id])
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id       String @id @default(uuid())
+  orderId String
+  mealId  String
+  quantity Int
+  price   Float   // snapshot price
+
+  order Order @relation(fields: [orderId], references: [id])
+  meal  Meal  @relation(fields: [mealId], references: [id])
+
+  @@unique([orderId, mealId])
 }
 
 model Review {
@@ -91,6 +96,8 @@ model Review {
 
   user User @relation(fields: [userId], references: [id])
   meal Meal @relation(fields: [mealId], references: [id])
+
+  @@unique([userId, mealId])
 }
 
 enum Role {
@@ -115,15 +122,15 @@ enum UserStatus {
 model Session {
   id        String   @id @default(uuid())
   expiresAt DateTime
-  token     String @default(uuid())
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@map("session")
 }
@@ -133,7 +140,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -143,6 +149,8 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")

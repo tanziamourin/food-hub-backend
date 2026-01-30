@@ -13,7 +13,7 @@ function errorHandler(
     let message = err.message || "Internal Server Error";
     let details: any = null;
 
-    // Prisma Errors Handling ----- start from here -----
+    // Prisma Errors Handling 
     //  Validation Error
 
     if (err instanceof Prisma.PrismaClientValidationError) {

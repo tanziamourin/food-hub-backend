@@ -43,7 +43,7 @@ async function seedAdmin() {
         console.log(`Email: ${adminEmail}`);
         console.log(`Password: ${adminPassword}`);
     } catch (error) {
-        console.error("❌ Error seeding admin:", error);
+        console.error(" Error seeding admin:", error);
     }
 }
 

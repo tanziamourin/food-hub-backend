@@ -29,7 +29,7 @@ declare global {
 }
 
 
-// Authorization Middleware
+// Auth Middleware
 
 const authorize = (...roles: UserRole[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -66,7 +66,7 @@ const authorize = (...roles: UserRole[]) => {
                 status: user.status as "ACTIVE" | "SUSPENDED",
             };
 
-            // Role-based access control
+            // Role-based  control
             if (roles.length && !roles.includes(req.user.role)) {
                 return res.status(403).json({ message: "Forbidden" });
             }
