@@ -24,7 +24,7 @@ export const updateUserStatus = async (req: Request, res: Response) => {
       ? req.params.id[0]
       : req.params.id;
 
-    const { status } = req.body; // ACTIVE | SUSPENDED
+    const { status } = req.body; 
 
     if (!id || !status) {
       return res.status(400).json({

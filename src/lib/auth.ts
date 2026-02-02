@@ -45,6 +45,13 @@ export const auth = betterAuth({
             },
         },
     },
+      session: {
+    additionalFields: {
+      role: {
+        type: "string",
+      },
+    },
+  },
 
     // Email and Password Auth
    

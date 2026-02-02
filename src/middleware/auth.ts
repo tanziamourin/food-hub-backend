@@ -45,9 +45,9 @@ const authorize = (...roles: UserRole[]) => {
             }
 
             // Email not verified
-            if (!session.user.emailVerified) {
-                return res.status(403).json({ message: "Email not verified" });
-            }
+            // if (!session.user.emailVerified) {
+            //     return res.status(403).json({ message: "Email not verified" });
+            // }
 
             const user = session.user as any;
 

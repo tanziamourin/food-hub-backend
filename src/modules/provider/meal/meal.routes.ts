@@ -1,6 +1,6 @@
-// meal.routes.ts
+
 import { Router } from "express";
-import authorize, { UserRole } from "../../middleware/auth";
+import authorize, { UserRole } from "../../../middleware/auth";
 import {
   createMeal,
   getMeals,
@@ -20,4 +20,4 @@ router.post("/", authorize(UserRole.PROVIDER), createMeal);
 router.patch("/:id", authorize(UserRole.PROVIDER), updateMeal);
 router.delete("/:id", authorize(UserRole.PROVIDER), deleteMeal);
 
-export default router;
+export const mealsRouter = router;

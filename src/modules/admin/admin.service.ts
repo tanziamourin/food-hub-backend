@@ -1,6 +1,6 @@
 import { UserStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
-// import { UserStatus } from "@prisma/client";
+
 
 export const AdminService = {
   getAllUsers: async () => {

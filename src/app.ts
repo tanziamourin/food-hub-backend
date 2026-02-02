@@ -5,48 +5,47 @@ import { auth } from "./lib/auth";
 import errorHandler from "./middleware/globalErrorHandler";
 import { notFound } from "./middleware/notFound";
 import authMiddleware from "./middleware/auth";
-import { prisma } from "./lib/prisma";
+// import { prisma } from "./lib/prisma";
 import { config } from "./config";
-import { getMyProfile } from "./modules/user/user.controller";
-// import { categoryRouter } from "./modules/category/category.router";
-// import { orderRouter } from "./modules/order/order.router";
-// import { adminRouter } from "./modules/admin/admin.router";
-// import { reviewRouter } from "./modules/review/review.router";
-// import { userRouter } from "./modules/user/user.router";
-// import { getMyProfile } from "./modules/user/user.controller";
+// import {categoryRouter} from "./modules/category/category.route";
+// import { getMyProfile } from "./modules/customer/user.controller";
+import { userRouter } from "./modules/customer/user.route";
+import { mealsRouter } from "./modules/provider/meal/meal.routes";
+import { providerOrderRouter } from "./modules/provider/order/provider.order.routes";
+import { prisma } from "./lib/prisma";
+import { orderRouter } from "./modules/customer/order/order.routes";
+import { adminRouter } from "./modules/admin/admin.route";
+import { getMyProfile } from "./modules/customer/user.controller";
+import { categoryRouter } from "./modules/category/category.routes";
+// import { adminRouter } from "./modules/admin/admin.routes";
 
 const app = express();
 
-
 const allowedOrigins = [
-    config.app_url,
-    // "http://localhost:3000",
-    "http://localhost:3000",
-    
+  config.app_url,
+  "http://localhost:3000",
 ];
 
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    credentials: true,
-}))
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true,
+}));
 
 app.use(express.json());
 
-
-
-
+// Auth routes
 app.get("/api/auth/me", authMiddleware(), getMyProfile);
+app.use("/api/auth", toNodeHandler(auth));
 
-// Custom Registration 
-app.post("/api/auth-registration", async (req: Request, res: Response) => {
-    console.log(">>> [REG_PROXY] START:", req.body?.email);
+app.post("/api/auth/register", async (req: Request, res: Response) => { 
+   console.log(">>> [REG_PROXY] START:", req.body?.email);
     res.setHeader('Content-Type', 'application/json');
 
     try {
@@ -62,7 +61,7 @@ app.post("/api/auth-registration", async (req: Request, res: Response) => {
         if (data?.user) {
             console.log(">>> [REG_PROXY] User created. Verifying email...");
 
-            // Auto-verify
+            // Auto-verify on registration
             await prisma.user.update({
                 where: { email: data.user.email },
                 data: { emailVerified: true }
@@ -84,47 +83,48 @@ app.post("/api/auth-registration", async (req: Request, res: Response) => {
             error: { message: err.message || "Internal Server Error" }
         });
     }
-});
-
-// Custom Login 
-app.post("/api/auth/login", async (req: Request, res: Response) => {
-    try {
+ });
+app.post("/api/auth/login", async (req: Request, res: Response) => { try {
         const result = await auth.api.signInEmail({ body: req.body });
         const data = result as any;
 
         if (data?.user?.email) {
-           
+            console.log(" User logged in. Ensuring emailVerified: true");
+
+            // Auto-verify on login (in case they were created before this change)
             await prisma.user.update({
                 where: { email: data.user.email },
                 data: { emailVerified: true }
-            }).catch(e => console.error("custom login failed:", e.message));
+            }).catch(e => console.error(" Auto-verify failed:", e.message));
         }
 
         return res.json(result);
     } catch (err: any) {
-        console.error("Login error:", err);
+        console.error( err);
         return res.status(500).json({
             error: { message: err.message || "Internal Server Error" }
         });
-    }
-});
-
-// Better Auth  Handler
-app.use("/api/auth", toNodeHandler(auth));
-
-// Application Routes
-
-// app.use("/api/categories", categoryRouter);
-// app.use("/api/medicines", medicineRouter);
-// app.use("/api/orders", orderRouter);
-// app.use("/api/admin", adminRouter);
-// app.use("/api/reviews", reviewRouter);
-// app.use("/api/users", userRouter);
-// 
+    }});
 
 
+// User routes
+app.use("/api/users", userRouter);
+ 
+app.use("/api/orders", orderRouter);
+// Public Meals
+app.use("/api/meals", mealsRouter); 
+app.use("/api/categories", categoryRouter);
+ 
+// Provider Management
+
+app.use("/api/provider/meals", mealsRouter);           
+app.use("/api/provider/orders", providerOrderRouter);  
+
+app.use("/api/admin", adminRouter);
+// Root
 app.get("/", (_req, res) => res.send("Food Hub Backend is running!"));
 
+// Error handling
 app.use(notFound);
 app.use(errorHandler);
 
