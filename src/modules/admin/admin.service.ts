@@ -1,4 +1,5 @@
-import { UserStatus, Role } from "../../../generated/prisma/enums";
+// import { UserStatus, Role } from "../generated/prisma";
+import { Role, UserStatus } from "../../generated/client/enums";
 import { prisma } from "../../lib/prisma";
 
 

@@ -3,7 +3,7 @@ import { ProviderProfileService } from "./provider.profile.service";
 import { updateProviderProfileSchema } from "./provider.profile.validation";
 
 interface AuthRequest extends Request {
-  user?: { id: string; role: any };
+  user?: any ;
 }
 
 // GET LOGGED-IN PROVIDER PROFILE
@@ -52,7 +52,7 @@ export const getProvider = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const provider = await ProviderProfileService.getProviderById(id);
+    const provider = await ProviderProfileService.getProviderById(req.params.id as string);
 
     if (!provider) {
       return res.status(404).json({

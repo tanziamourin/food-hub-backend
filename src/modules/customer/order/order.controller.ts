@@ -17,7 +17,7 @@ import { createOrderIntoDB } from "./order.service";
 
 
 export const createOrder = async (req: Request, res: Response) => {
-  const userId = req.user.id;
+  const userId = req.user!.id;
 
   const result = await createOrderIntoDB(userId, req.body);
 

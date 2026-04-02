@@ -36,13 +36,18 @@ export const getProviders = async (_req: Request, res: Response) => {
 
 export const updateUserStatus = async (req: Request, res: Response) => {
   try {
-    const id = Array.isArray(req.params.id)
+    const userId = Array.isArray(req.params.id)
       ? req.params.id[0]
       : req.params.id;
 
     const { status } = req.body; 
-
-    if (!id || !status) {
+    if (!userId) {
+  return res.status(400).json({
+    success: false,
+    message: "User ID is required",
+  });
+}
+    if (!userId || !status) {
       return res.status(400).json({
         success: false,
         message: "User id and status are required",
@@ -57,7 +62,7 @@ export const updateUserStatus = async (req: Request, res: Response) => {
     }
 
     const user = await AdminService.updateUserStatus(
-      id,
+      userId as string ,
       status as "ACTIVE" | "SUSPENDED"
     );
 
@@ -118,7 +123,7 @@ export const updateUserRole = async (req: Request, res: Response) => {
 }
 
     const updatedUser = await AdminService.updateUserRole(
-      userId,
+      userId as string,
       role
     );
 

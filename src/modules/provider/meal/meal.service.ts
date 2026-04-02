@@ -55,11 +55,14 @@ const updateMeal = async (
   const provider = await prisma.providerProfile.findUnique({
     where: { userId },
   });
+ if (!provider) {
+    throw new Error("Provider not found");
+  }
 
   return prisma.meal.updateMany({
     where: {
       id: mealId,
-      providerId: provider?.id,
+      providerId: provider.id,
     },
     data,
   });
@@ -71,6 +74,9 @@ const deleteMeal = async (mealId: string, userId: string) => {
   const provider = await prisma.providerProfile.findUnique({
     where: { userId },
   });
+ if (!provider) {
+    throw new Error("Provider not found");
+  }
 
   return prisma.meal.deleteMany({
     where: {

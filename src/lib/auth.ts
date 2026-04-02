@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import nodemailer from "nodemailer";
+import { oAuthProxy } from "better-auth/plugins";
 
 // Mail Transporter
 
@@ -22,7 +23,7 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
-
+    baseURL:process.env.APP_URL,
     trustedOrigins: [process.env.APP_URL!],
 
 
@@ -92,5 +93,29 @@ export const auth = betterAuth({
             callbackUrl: `${process.env.APP_URL}/api/auth/callback/google`
         },
     }
-   
+   ,
+   advanced: {
+    cookies: {
+      session_token: {
+        name: "session_token", // Force this exact name
+        attributes: {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          partitioned: true,
+        },
+      },
+      state: {
+        name: "session_token", // Force this exact name
+        attributes: {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          partitioned: true,
+        },
+      },
+    },
+  },
+
+  plugins: [oAuthProxy()]
 });
