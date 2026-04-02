@@ -1,22 +1,20 @@
-// import { prisma } from "../../lib/prisma";
+
 
 import { prisma } from "../../../lib/prisma";
+import { createPaymentIntent } from "../../../stripe/stripe.service";
 
-export const createOrderIntoDB = async (
-  userId: string,
-  payload: {
-    deliveryAddress: string;
-    items: { mealId: string; quantity: number }[];
-  }
-) => {
+export const createOrderIntoDB = async (userId: string, payload: any) => {
   const meals = await prisma.meal.findMany({
-    where: { id: { in: payload.items.map(i => i.mealId) } },
-    select: { id: true, price: true },
+    where: { id: { in: payload.items.map((i: any) => i.mealId) } },
   });
 
-  const orderItems = payload.items.map(item => {
+  let totalAmount = 0;
+
+  const orderItems = payload.items.map((item: any) => {
     const meal = meals.find(m => m.id === item.mealId);
     if (!meal) throw new Error("Meal not found");
+
+    totalAmount += meal.price * item.quantity;
 
     return {
       mealId: item.mealId,
@@ -25,18 +23,26 @@ export const createOrderIntoDB = async (
     };
   });
 
-  return prisma.order.create({
+  // 💳 Stripe
+  const paymentIntent = await createPaymentIntent(totalAmount);
+
+  // 🧾 Order
+  const order = await prisma.order.create({
     data: {
       customerId: userId,
       deliveryAddress: payload.deliveryAddress,
+      totalAmount,
+      paymentIntentId: paymentIntent.id,
+      paymentStatus: "PENDING",
       items: { create: orderItems },
     },
-    include: {
-      items: { include: { meal: true } },
-    },
   });
-};
 
+  return {
+    order,
+    clientSecret: paymentIntent.client_secret,
+  };
+};
 export const getMyOrdersFromDB = async (userId: string) => {
   return prisma.order.findMany({
     where: { customerId: userId },

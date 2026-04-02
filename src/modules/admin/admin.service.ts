@@ -1,4 +1,4 @@
-import { UserStatus } from "../../../generated/prisma/enums";
+import { UserStatus, Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 
@@ -18,7 +18,21 @@ export const AdminService = {
       },
     });
   },
-
+getAllProviders: async () => {
+  return prisma.providerProfile.findMany({
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      shopName: "asc",
+    },
+  });
+},
   updateUserStatus: async (id: string, status: UserStatus) => {
     return prisma.user.update({
       where: { id },
@@ -46,4 +60,11 @@ export const AdminService = {
       orders: totalOrders,
     };
   },
+updateUserRole: async (userId: string, role: Role) => {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { role },
+  });
+},
+  
 };

@@ -1,95 +1,94 @@
 import { NextFunction, Request, Response } from "express";
 import { Prisma } from "../../generated/prisma/client";
-
-// Global Error Handler
+import { ZodError } from "zod";
 
 function errorHandler(
-    err: any,
-    req: Request,
-    res: Response,
-    next: NextFunction
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-    let statusCode = err.statusCode || err.status || 500;
-    let message = err.message || "Internal Server Error";
-    let details: any = null;
+  let statusCode = err.statusCode || err.status || 500;
+  let message = err.message || "Internal Server Error";
+  let details: any = null;
 
-    // Prisma Errors Handling 
-    //  Validation Error
+  //  ZOD VALIDATION ERROR
+  if (err instanceof ZodError) {
+    statusCode = 400;
+    message = "Validation failed";
 
-    if (err instanceof Prisma.PrismaClientValidationError) {
+    details = err.issues.map((e) => ({
+      field: e.path.join("."),
+      message: e.message,
+    }));
+  }
+
+  // Prisma Validation Error
+  else if (err instanceof Prisma.PrismaClientValidationError) {
+    statusCode = 400;
+    message = "Invalid request data";
+    details = err.message;
+  }
+
+  //  Prisma Known Errors
+  else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    switch (err.code) {
+      case "P2002":
+        statusCode = 409;
+        message = "Duplicate value violates unique constraint";
+        details = err.meta;
+        break;
+
+      case "P2025":
+        statusCode = 404;
+        message = "Requested record not found";
+        details = err.meta;
+        break;
+
+      case "P2003":
         statusCode = 400;
-        message = "Invalid request data";
-        details = err.message;
+        message = "Invalid foreign key reference";
+        details = err.meta;
+        break;
+
+      default:
+        statusCode = 400;
+        message = "Database request error";
+        details = err.meta;
     }
+  }
 
-    //  Known Request Errors
+  //  Unknown DB Error
+  else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+    statusCode = 500;
+    message = "Unknown database error occurred";
+    details = err.message;
+  }
 
-    else if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (err.code) {
-            case "P2002":
-                statusCode = 409;
-                message = "Duplicate value violates unique constraint";
-                details = err.meta;
-                break;
+  //  Rust Panic
+  else if (err instanceof Prisma.PrismaClientRustPanicError) {
+    statusCode = 500;
+    message = "Critical database error (Rust panic)";
+    details = err.message;
+  }
 
-            case "P2025":
-                statusCode = 404;
-                message = "Requested record not found";
-                details = err.meta;
-                break;
+  //  Initialization Error
+  else if (err instanceof Prisma.PrismaClientInitializationError) {
+    statusCode = 500;
+    message = "Failed to initialize database connection";
+    details = err.message;
+  }
 
-            case "P2003":
-                statusCode = 400;
-                message = "Invalid foreign key reference";
-                details = err.meta;
-                break;
-
-            default:
-                statusCode = 400;
-                message = "Database request error";
-                details = err.meta;
-        }
-    }
-
-
-    //  Unknown Error
-
-    else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-        statusCode = 500;
-        message = "Unknown database error occurred";
-        details = err.message;
-    }
-
-
-    //  Rust Panic Error
-
-    else if (err instanceof Prisma.PrismaClientRustPanicError) {
-        statusCode = 500;
-        message = "Critical database error (Rust panic)";
-        details = err.message;
-    }
-
-
-    //  Initialization Error
-
-    else if (err instanceof Prisma.PrismaClientInitializationError) {
-        statusCode = 500;
-        message = "Failed to initialize database connection";
-        details = err.message;
-    }
-
-
-    // Response
-
-    res.status(statusCode).json({
-        success: false,
-        message,
-        details,
-        stack:
-            process.env.NODE_ENV === "production"
-                ? undefined
-                : err.stack,
-    });
+  // ✅ Final Response
+  res.status(statusCode).json({
+    success: false,
+    message,
+    details,
+    stack:
+      process.env.NODE_ENV === "production"
+        ? undefined
+        : err.stack,
+  });
 }
 
 export default errorHandler;

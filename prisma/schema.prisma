@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
 }
 
 model User {
@@ -15,73 +14,79 @@ model User {
   role            Role             @default(CUSTOMER)
   status          UserStatus       @default(ACTIVE)
   emailVerified   Boolean          @default(false)
-  image           String?
-  phone           String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-
-  providerProfile ProviderProfile?
+  image           String?
+  phone           String?
   orders          Order[]
+  providerProfile ProviderProfile?
   reviews         Review[]
-  sessions        Session[]
   accounts        Account[]
+  sessions        Session[]
 
   @@map("user")
 }
 
-model ProviderProfile {
-  id       String @id @default(uuid())
-  userId   String @unique
-  shopName String
-  address  String
 
-  user  User   @relation(fields: [userId], references: [id])
+model ProviderProfile {
+  id          String @id @default(uuid())
+  userId      String @unique
+
+  shopName    String?
+  address     String?
+  phone       String?
+  logo        String?
+  description String?
+
   meals Meal[]
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Category {
   id    String @id @default(uuid())
   name  String @unique
-
   meals Meal[]
 }
 
 model Meal {
-  id          String @id @default(uuid())
+  id          String          @id @default(uuid())
   name        String
   description String
   price       Float
+  providerId  String
+  categoryId  String
   image       String?
-
-  providerId String
-  categoryId String
-
-  provider ProviderProfile @relation(fields: [providerId], references: [id])
-  category Category        @relation(fields: [categoryId], references: [id])
-  reviews  Review[]
-  orderItems OrderItem[]
+  category    Category        @relation(fields: [categoryId], references: [id])
+  provider    ProviderProfile @relation(fields: [providerId], references: [id])
+  orderItems  OrderItem[]
+  reviews     Review[]
 }
 
 model Order {
   id              String      @id @default(uuid())
   customerId      String
   status          OrderStatus @default(PLACED)
-  deliveryAddress String
   createdAt       DateTime    @default(now())
+  deliveryAddress String
 
-  customer  User        @relation(fields: [customerId], references: [id])
-  items     OrderItem[]
+  
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentIntentId String?
+  totalAmount     Float
+
+  customer        User        @relation(fields: [customerId], references: [id])
+  items           OrderItem[]
 }
 
 model OrderItem {
   id       String @id @default(uuid())
-  orderId String
-  mealId  String
+  orderId  String
+  mealId   String
   quantity Int
-  price   Float   // snapshot price
-
-  order Order @relation(fields: [orderId], references: [id])
-  meal  Meal  @relation(fields: [mealId], references: [id])
+  price    Float
+  meal     Meal   @relation(fields: [mealId], references: [id])
+  order    Order  @relation(fields: [orderId], references: [id])
 
   @@unique([orderId, mealId])
 }
@@ -90,33 +95,12 @@ model Review {
   id      String @id @default(uuid())
   rating  Int
   comment String
-
-  mealId String
-  userId String
-
-  user User @relation(fields: [userId], references: [id])
-  meal Meal @relation(fields: [mealId], references: [id])
+  mealId  String
+  userId  String
+  meal    Meal   @relation(fields: [mealId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
 
   @@unique([userId, mealId])
-}
-
-enum Role {
-  CUSTOMER
-  PROVIDER
-  ADMIN
-}
-
-enum OrderStatus {
-  PLACED
-  PREPARING
-  READY
-  DELIVERED
-  CANCELLED
-}
-
-enum UserStatus {
-  ACTIVE
-  SUSPENDED
 }
 
 model Session {
@@ -128,8 +112,7 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("session")
@@ -149,8 +132,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -166,4 +148,28 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum OrderStatus {
+  PLACED
+  PREPARING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
 }
