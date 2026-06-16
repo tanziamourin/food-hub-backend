@@ -29,16 +29,18 @@ app.use(
       "https://food-hub-frontend-ten.vercel.app",
     ],
     credentials: true,
+     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
+app.options("*", cors());
 
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
+// app.use((req, res, next) => {
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(200);
+//   }
 
-  next();
-});
+//   next();
+// });
 
 /* ================= BODY ================= */
 app.use(express.json());

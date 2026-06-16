@@ -25,8 +25,11 @@ app.use(cors({
     ],
     credentials: true,
 }));
-app.options("*", (req, res) => {
-    res.sendStatus(200);
+app.use((req, res, next) => {
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(200);
+    }
+    next();
 });
 /* ================= BODY ================= */
 app.use(express.json());

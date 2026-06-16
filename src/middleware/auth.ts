@@ -26,7 +26,11 @@ const authorize = (...roles: UserRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       // ✅ FIX: correct headers format
-      const session = await auth.api.getSession({ headers: req.headers as any })
+   const session = await auth.api.getSession({
+  headers: Object.fromEntries(
+    Object.entries(req.headers).map(([k, v]) => [k, v as string])
+  ) as any,
+});
 
       if (!session || !session.user) {
         return res.status(401).json({ message: "Unauthorized" });
