@@ -6,15 +6,12 @@ export declare const auth: import("better-auth").Auth<{
         additionalFields: {
             role: {
                 type: "string";
-                required: false;
             };
             phone: {
                 type: "string";
-                required: false;
             };
             status: {
                 type: "string";
-                required: false;
             };
         };
     };
@@ -33,7 +30,7 @@ export declare const auth: import("better-auth").Auth<{
     emailVerification: {
         sendOnSignUp: true;
         autoSignInAfterVerification: true;
-        sendVerificationEmail: ({ user, url, token }: {
+        sendVerificationEmail: ({ user, url }: {
             user: import("better-auth").User;
             url: string;
             token: string;
@@ -41,8 +38,6 @@ export declare const auth: import("better-auth").Auth<{
     };
     socialProviders: {
         google: {
-            prompt: "select_account consent";
-            accessType: "offline";
             clientId: string;
             clientSecret: string;
             callbackUrl: string;
@@ -56,16 +51,6 @@ export declare const auth: import("better-auth").Auth<{
                     httpOnly: true;
                     secure: true;
                     sameSite: "none";
-                    partitioned: true;
-                };
-            };
-            state: {
-                name: string;
-                attributes: {
-                    httpOnly: true;
-                    secure: true;
-                    sameSite: "none";
-                    partitioned: true;
                 };
             };
         };

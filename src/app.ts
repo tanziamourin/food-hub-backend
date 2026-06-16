@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { prisma } from "./lib/prisma";
@@ -20,45 +21,47 @@ import { providerProfileRouter } from "./modules/provider/profile/provider.profi
 
 const app = express();
 
-// ================= GLOBAL CORS =================
-app.use((req, res, next) => {
-  const allowedOrigin = "https://food-hub-frontend-ten.vercel.app";
-  res.header("Access-Control-Allow-Origin", allowedOrigin);
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  );
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-  );
+/* ================= CORS ================= */
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://food-hub-frontend-ten.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
+app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
-    return res.sendStatus(200); // preflight response
+    return res.sendStatus(200);
   }
 
   next();
 });
 
-// ================= BODY PARSER =================
+/* ================= BODY ================= */
 app.use(express.json());
 
-// ================= AUTH =================
-// Profile (custom)
-app.get("/api/auth/me", authMiddleware(), getMyProfile);
-
-// better-auth handler (must come AFTER CORS)
+/* ================= ROUTES ================= */
+// 🔐 Better-auth handler
 app.use("/api/auth", toNodeHandler(auth));
 
-// ================= CUSTOM AUTH =================
+// 🔐 Auth protected route (PUT THIS BEFORE auth handler)
+app.get("/api/auth/me", authMiddleware(), getMyProfile);
+
+
+/* ================= CUSTOM AUTH ================= */
+
 // Register
 app.post("/api/auth/register", async (req: Request, res: Response) => {
   try {
     const result = await auth.api.signUpEmail({ body: req.body });
     const data = result as any;
 
-    if (data?.error) return res.status(200).json({ error: data.error });
+    if (data?.error) {
+      return res.status(400).json({ error: data.error });
+    }
 
     if (data?.user) {
       await prisma.user.update({
@@ -74,9 +77,12 @@ app.post("/api/auth/register", async (req: Request, res: Response) => {
       });
     }
 
-    return res.status(200).json(result);
-  } catch (e: any) {
-    return res.status(500).json({ error: { message: e.message || "Internal Server Error" } });
+    return res.json(result);
+  } catch (err: any) {
+    console.error("REGISTER ERROR:", err);
+    return res.status(500).json({
+      error: { message: err.message || "Internal Server Error" },
+    });
   }
 });
 
@@ -94,12 +100,16 @@ app.post("/api/auth/login", async (req: Request, res: Response) => {
     }
 
     return res.json(result);
-  } catch (e: any) {
-    return res.status(500).json({ error: { message: e.message || "Internal Server Error" } });
+  } catch (err: any) {
+    console.error("LOGIN ERROR:", err);
+    return res.status(500).json({
+      error: { message: err.message || "Internal Server Error" },
+    });
   }
 });
 
-// ================= ROUTES =================
+/* ================= APP ROUTES ================= */
+
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/meals", mealsRouter);
@@ -109,10 +119,14 @@ app.use("/api/provider/meals", mealsRouter);
 app.use("/api/provider/orders", providerOrderRouter);
 app.use("/api/admin", adminRouter);
 
-// ================= ROOT =================
-app.get("/", (_req, res) => res.send("Food Hub Backend is running!"));
+/* ================= ROOT ================= */
 
-// ================= ERROR HANDLING =================
+app.get("/", (_req, res) => {
+  res.send("Food Hub Backend is running!");
+});
+
+/* ================= ERROR HANDLING ================= */
+
 app.use(notFound);
 app.use(errorHandler);
 

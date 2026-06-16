@@ -8,29 +8,40 @@ export declare const MealService: {
         price: number;
         categoryId: string;
     }>;
-    getMeals: () => import("../../../generated/client/internal/prismaNamespace").PrismaPromise<({
-        provider: {
-            id: string;
-            phone: string | null;
-            userId: string;
-            description: string | null;
-            shopName: string | null;
-            address: string | null;
-            logo: string | null;
-        };
-        category: {
+    getMeals: ({ page, limit, search, }: {
+        page: number;
+        limit: number;
+        search: string;
+    }) => Promise<{
+        data: ({
+            provider: {
+                id: string;
+                phone: string | null;
+                userId: string;
+                description: string | null;
+                shopName: string | null;
+                address: string | null;
+                logo: string | null;
+            };
+            category: {
+                name: string;
+                id: string;
+            };
+        } & {
             name: string;
             id: string;
+            image: string | null;
+            providerId: string;
+            description: string;
+            price: number;
+            categoryId: string;
+        })[];
+        meta: {
+            page: number;
+            limit: number;
+            total: number;
         };
-    } & {
-        name: string;
-        id: string;
-        image: string | null;
-        providerId: string;
-        description: string;
-        price: number;
-        categoryId: string;
-    })[]>;
+    }>;
     getMealById: (id: string) => import("../../../generated/client/models").Prisma__MealClient<({
         provider: {
             id: string;

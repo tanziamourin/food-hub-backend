@@ -25,6 +25,7 @@ async function seedAdmin() {
                 name: adminName,
                 role: "ADMIN",
                 status: "ACTIVE",
+                phone: "0000000000",
             }
         });
         await auth.api.signUpEmail({
@@ -32,6 +33,9 @@ async function seedAdmin() {
                 email: adminEmail,
                 password: adminPassword,
                 name: adminName,
+                role: "ADMIN",
+                status: "ACTIVE",
+                phone: "0000000000",
             }
         });
         await prisma.user.update({

@@ -1,4 +1,3 @@
-// meal.service.ts
 import { prisma } from "../../../lib/prisma";
 
 const createMeal = async (userId: string, data: any) => {
@@ -7,12 +6,11 @@ const createMeal = async (userId: string, data: any) => {
   });
 
   if (!provider) {
-  
     provider = await prisma.providerProfile.create({
       data: {
         userId: userId,
         shopName: "My Shop",
-        address: "Update your address", 
+        address: "Update your address",
       },
     });
   }
@@ -23,17 +21,55 @@ const createMeal = async (userId: string, data: any) => {
       price: parseFloat(data.price),
       description: data.description,
       providerId: provider.id,
-      categoryId: data.categoryId, 
+      categoryId: data.categoryId,
     },
   });
 };
-const getMeals = () => {
-  return prisma.meal.findMany({
+
+// ✅ FIXED getMeals with pagination + search
+const getMeals = async ({
+  page,
+  limit,
+  search,
+}: {
+  page: number;
+  limit: number;
+  search: string;
+}) => {
+  const skip = (page - 1) * limit;
+
+  const meals = await prisma.meal.findMany({
+    where: {
+      name: {
+        contains: search,
+        mode: "insensitive",
+      },
+    },
     include: {
       category: true,
       provider: true,
     },
+    skip,
+    take: limit,
   });
+
+  const total = await prisma.meal.count({
+    where: {
+      name: {
+        contains: search,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  return {
+    data: meals,
+    meta: {
+      page,
+      limit,
+      total,
+    },
+  };
 };
 
 const getMealById = (id: string) => {
@@ -46,7 +82,6 @@ const getMealById = (id: string) => {
   });
 };
 
-//  provider can update ONLY own meal
 const updateMeal = async (
   mealId: string,
   userId: string,
@@ -55,7 +90,8 @@ const updateMeal = async (
   const provider = await prisma.providerProfile.findUnique({
     where: { userId },
   });
- if (!provider) {
+
+  if (!provider) {
     throw new Error("Provider not found");
   }
 
@@ -68,24 +104,22 @@ const updateMeal = async (
   });
 };
 
-
-//  provider can delete ONLY own meal
 const deleteMeal = async (mealId: string, userId: string) => {
   const provider = await prisma.providerProfile.findUnique({
     where: { userId },
   });
- if (!provider) {
+
+  if (!provider) {
     throw new Error("Provider not found");
   }
 
   return prisma.meal.deleteMany({
     where: {
       id: mealId,
-      providerId: provider?.id,
+      providerId: provider.id,
     },
   });
 };
-
 
 export const MealService = {
   createMeal,
