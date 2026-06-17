@@ -22,38 +22,47 @@ import { providerProfileRouter } from "./modules/provider/profile/provider.profi
 const app = express();
 
 /* ================= CORS ================= */
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://food-hub-frontend-ten.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://food-hub-frontend-ten.vercel.app",
-    ],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
+
+/* 🔥 FIX: Preflight handler (IMPORTANT) */
 app.options("*", cors());
 
-// app.use((req, res, next) => {
-//   if (req.method === "OPTIONS") {
-//     return res.sendStatus(200);
-//   }
-
-//   next();
-// });
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 /* ================= BODY ================= */
 app.use(express.json());
 
-/* ================= ROUTES ================= */
-// 🔐 Better-auth handler
+/* ================= ROOT ================= */
+app.get("/", (_req, res) => {
+  res.send("Food Hub Backend is running!");
+});
+
+/* ================= AUTH (IMPORTANT ORDER) ================= */
 app.use("/api/auth", toNodeHandler(auth));
 
-// 🔐 Auth protected route (PUT THIS BEFORE auth handler)
-app.get("/api/auth/me", authMiddleware(), getMyProfile);
-
-
-/* ================= CUSTOM AUTH ================= */
+/* ================= CUSTOM AUTH ROUTES ================= */
 
 // Register
 app.post("/api/auth/register", async (req: Request, res: Response) => {
@@ -111,7 +120,6 @@ app.post("/api/auth/login", async (req: Request, res: Response) => {
 });
 
 /* ================= APP ROUTES ================= */
-
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/meals", mealsRouter);
@@ -121,14 +129,10 @@ app.use("/api/provider/meals", mealsRouter);
 app.use("/api/provider/orders", providerOrderRouter);
 app.use("/api/admin", adminRouter);
 
-/* ================= ROOT ================= */
-
-app.get("/", (_req, res) => {
-  res.send("Food Hub Backend is running!");
-});
+/* ================= PROFILE ================= */
+app.get("/api/auth/me", authMiddleware(), getMyProfile);
 
 /* ================= ERROR HANDLING ================= */
-
 app.use(notFound);
 app.use(errorHandler);
 
