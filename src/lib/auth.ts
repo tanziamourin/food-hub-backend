@@ -19,7 +19,7 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
 
-  baseURL: process.env.APP_URL,
+  baseURL: process.env.BETTER_AUTH_URL,
 
   trustedOrigins: [
     "http://localhost:3000",
@@ -64,7 +64,7 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackUrl: `${process.env.APP_URL}/api/auth/callback/google`,
+      callbackUrl: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
     },
   },
 
