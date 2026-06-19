@@ -58,6 +58,16 @@ app.use(express.json());
 app.get("/", (_req, res) => {
   res.send("Food Hub Backend is running!");
 });
+app.get("/api/test-session", async (req, res) => {
+  const session = await auth.api.getSession({
+    headers: req.headers as any,
+  });
+
+  return res.json({
+    cookie: req.headers.cookie || null,
+    session,
+  });
+});
 
 /* ================= AUTH (IMPORTANT ORDER) ================= */
 app.use("/api/auth", toNodeHandler(auth));
