@@ -81,5 +81,5 @@ export const auth = betterAuth({
   //   },
   // },
 
-  plugins: [oAuthProxy()],
+  plugins: [],
 });
