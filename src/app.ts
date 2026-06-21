@@ -68,7 +68,14 @@ app.get("/api/test-session", async (req, res) => {
     session,
   });
 });
+app.get("/debug-auth", async (req, res) => {
+  const count = await prisma.session.count();
 
+  res.json({
+    hasSecret: !!process.env.BETTER_AUTH_SECRET,
+    sessionCount: count,
+  });
+});
 /* ================= AUTH (IMPORTANT ORDER) ================= */
 app.use("/api/auth", toNodeHandler(auth));
 
