@@ -70,16 +70,16 @@ export const auth = betterAuth({
   },
 
   advanced: {
-    cookies: {
-      session_token: {
-        name: "session_token",
-        attributes: {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none", // required for cross-domain
-        },
-      },
-    },
+    // cookies: {
+    //   session_token: {
+    //     name: "session_token",
+    //     attributes: {
+    //       httpOnly: true,
+    //       secure: true,
+    //       sameSite: "none", // required for cross-domain
+    //     },
+    //   },
+    // },
   },
 
   plugins: [],
