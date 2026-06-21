@@ -59,9 +59,13 @@ app.get("/", (_req, res) => {
   res.send("Food Hub Backend is running!");
 });
 app.get("/api/test-session", async (req, res) => {
+  console.log("COOKIE:", req.headers.cookie);
+
   const session = await auth.api.getSession({
     headers: req.headers as any,
   });
+
+  console.log("SESSION:", session);
 
   return res.json({
     cookie: req.headers.cookie || null,
