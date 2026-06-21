@@ -86,59 +86,59 @@ app.use("/api/auth", toNodeHandler(auth));
 /* ================= CUSTOM AUTH ROUTES ================= */
 
 // Register
-app.post("/api/auth/register", async (req: Request, res: Response) => {
-  try {
-    const result = await auth.api.signUpEmail({ body: req.body });
-    const data = result as any;
+// app.post("/api/auth/register", async (req: Request, res: Response) => {
+//   try {
+//     const result = await auth.api.signUpEmail({ body: req.body });
+//     const data = result as any;
 
-    if (data?.error) {
-      return res.status(400).json({ error: data.error });
-    }
+//     if (data?.error) {
+//       return res.status(400).json({ error: data.error });
+//     }
 
-    if (data?.user) {
-      await prisma.user.update({
-        where: { email: data.user.email },
-        data: { emailVerified: true },
-      });
+//     if (data?.user) {
+//       await prisma.user.update({
+//         where: { email: data.user.email },
+//         data: { emailVerified: true },
+//       });
 
-      return res.status(201).json({
-        success: true,
-        message: "Account created successfully",
-        user: { ...data.user, emailVerified: true },
-        session: data.session || null,
-      });
-    }
+//       return res.status(201).json({
+//         success: true,
+//         message: "Account created successfully",
+//         user: { ...data.user, emailVerified: true },
+//         session: data.session || null,
+//       });
+//     }
 
-    return res.json(result);
-  } catch (err: any) {
-    console.error("REGISTER ERROR:", err);
-    return res.status(500).json({
-      error: { message: err.message || "Internal Server Error" },
-    });
-  }
-});
+//     return res.json(result);
+//   } catch (err: any) {
+//     console.error("REGISTER ERROR:", err);
+//     return res.status(500).json({
+//       error: { message: err.message || "Internal Server Error" },
+//     });
+//   }
+// });
 
 // Login
-app.post("/api/auth/login", async (req: Request, res: Response) => {
-  try {
-    const result = await auth.api.signInEmail({ body: req.body });
-    const data = result as any;
+// app.post("/api/auth/login", async (req: Request, res: Response) => {
+//   try {
+//     const result = await auth.api.signInEmail({ body: req.body });
+//     const data = result as any;
 
-    if (data?.user?.email) {
-      await prisma.user.update({
-        where: { email: data.user.email },
-        data: { emailVerified: true },
-      });
-    }
+//     if (data?.user?.email) {
+//       await prisma.user.update({
+//         where: { email: data.user.email },
+//         data: { emailVerified: true },
+//       });
+//     }
 
-    return res.json(result);
-  } catch (err: any) {
-    console.error("LOGIN ERROR:", err);
-    return res.status(500).json({
-      error: { message: err.message || "Internal Server Error" },
-    });
-  }
-});
+//     return res.json(result);
+//   } catch (err: any) {
+//     console.error("LOGIN ERROR:", err);
+//     return res.status(500).json({
+//       error: { message: err.message || "Internal Server Error" },
+//     });
+//   }
+// });
 
 /* ================= APP ROUTES ================= */
 app.use("/api/users", userRouter);
