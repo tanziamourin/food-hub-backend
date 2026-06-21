@@ -108,7 +108,7 @@ app.post("/api/auth/register", async (req: Request, res: Response) => {
         session: data.session || null,
       });
     }
-
+  console.log("SIGNUP RESULT =", result);
     return res.json(result);
   } catch (err: any) {
     console.error("REGISTER ERROR:", err);
@@ -130,8 +130,9 @@ app.post("/api/auth/login", async (req: Request, res: Response) => {
         data: { emailVerified: true },
       });
     }
-
+console.log("RESULT:", result);
     return res.json(result);
+    
   } catch (err: any) {
     console.error("LOGIN ERROR:", err);
     return res.status(500).json({
