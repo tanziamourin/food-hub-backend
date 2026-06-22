@@ -142,9 +142,6 @@ app.use(express.json());
 //     });
 //   }
 // });
-
-/* ================= PROFILE ================= */
-app.get("/api/auth/me", authMiddleware(), getMyProfile);
 app.get("/debug-env", (req, res) => {
   res.json({
     secret: !!process.env.BETTER_AUTH_SECRET,
@@ -152,71 +149,74 @@ app.get("/debug-env", (req, res) => {
   });
 });
 
-app.post("/api/auth/register", async (req: Request, res: Response) => {
-    console.log(">>> [REG_PROXY] START:", req.body?.email);
-    res.setHeader('Content-Type', 'application/json');
+/* ================= PROFILE ================= */
+app.get("/api/auth/me", authMiddleware(), getMyProfile);
 
-    try {
-        const result = await auth.api.signUpEmail({
-            body: req.body,
-        });
+// app.post("/api/auth/register", async (req: Request, res: Response) => {
+//     console.log(">>> [REG_PROXY] START:", req.body?.email);
+//     res.setHeader('Content-Type', 'application/json');
 
-        const data = result as any;
-        if (data?.error) {
-            return res.status(200).json({ error: data.error });
-        }
+//     try {
+//         const result = await auth.api.signUpEmail({
+//             body: req.body,
+//         });
 
-        if (data?.user) {
-            console.log(">>> [REG_PROXY] User created. Verifying email...");
+//         const data = result as any;
+//         if (data?.error) {
+//             return res.status(200).json({ error: data.error });
+//         }
 
-            // Auto-verify on registration
-            await prisma.user.update({
-                where: { email: data.user.email },
-                data: { emailVerified: true }
-            }).catch(e => console.error(">>> [REG_PROXY] Auto-verify failed:", e.message));
+//         if (data?.user) {
+//             console.log(">>> [REG_PROXY] User created. Verifying email...");
 
-            return res.status(201).json({
-                success: true,
-                message: "Account created successfully",
-                user: { ...data.user, emailVerified: true },
-                session: data.session || null
-            });
-        }
+//             // Auto-verify on registration
+//             await prisma.user.update({
+//                 where: { email: data.user.email },
+//                 data: { emailVerified: true }
+//             }).catch(e => console.error(">>> [REG_PROXY] Auto-verify failed:", e.message));
 
-        return res.status(200).json(result);
+//             return res.status(201).json({
+//                 success: true,
+//                 message: "Account created successfully",
+//                 user: { ...data.user, emailVerified: true },
+//                 session: data.session || null
+//             });
+//         }
 
-    } catch (err: any) {
-        console.error(">>> [REG_PROXY] FATAL:", err);
-        return res.status(500).json({
-            error: { message: err.message || "Internal Server Error" }
-        });
-    }
-});
+//         return res.status(200).json(result);
+
+//     } catch (err: any) {
+//         console.error(">>> [REG_PROXY] FATAL:", err);
+//         return res.status(500).json({
+//             error: { message: err.message || "Internal Server Error" }
+//         });
+//     }
+// });
 
 // Custom Login Proxy (Auto-verify email on login)
-app.post("/api/auth/login", async (req: Request, res: Response) => {
-    try {
-        const result = await auth.api.signInEmail({ body: req.body });
-        const data = result as any;
+// app.post("/api/auth/login", async (req: Request, res: Response) => {
+//     try {
+//         const result = await auth.api.signInEmail({ body: req.body });
+//         const data = result as any;
 
-        if (data?.user?.email) {
-            console.log(">>> [LOGIN_PROXY] User logged in. Ensuring emailVerified: true");
+//         if (data?.user?.email) {
+//             console.log(">>> [LOGIN_PROXY] User logged in. Ensuring emailVerified: true");
 
-            // Auto-verify on login (in case they were created before this change)
-            await prisma.user.update({
-                where: { email: data.user.email },
-                data: { emailVerified: true }
-            }).catch(e => console.error(">>> [LOGIN_PROXY] Auto-verify failed:", e.message));
-        }
+//             // Auto-verify on login (in case they were created before this change)
+//             await prisma.user.update({
+//                 where: { email: data.user.email },
+//                 data: { emailVerified: true }
+//             }).catch(e => console.error(">>> [LOGIN_PROXY] Auto-verify failed:", e.message));
+//         }
 
-        return res.json(result);
-    } catch (err: any) {
-        console.error(">>> [LOGIN_PROXY] FATAL:", err);
-        return res.status(500).json({
-            error: { message: err.message || "Internal Server Error" }
-        });
-    }
-});
+//         return res.json(result);
+//     } catch (err: any) {
+//         console.error(">>> [LOGIN_PROXY] FATAL:", err);
+//         return res.status(500).json({
+//             error: { message: err.message || "Internal Server Error" }
+//         });
+//     }
+// });
 
 /* ================= AUTH (IMPORTANT ORDER) ================= */
 app.use("/api/auth", toNodeHandler(auth));

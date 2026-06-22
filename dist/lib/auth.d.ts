@@ -20,7 +20,7 @@ export declare const auth: import("better-auth").Auth<{
     };
     emailAndPassword: {
         enabled: true;
-        autoSignIn: false;
+        autoSignIn: true;
         requireEmailVerification: false;
     };
     emailVerification: {

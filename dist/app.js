@@ -117,6 +117,12 @@ app.use(express.json());
 // });
 /* ================= PROFILE ================= */
 app.get("/api/auth/me", authMiddleware(), getMyProfile);
+app.get("/debug-env", (req, res) => {
+    res.json({
+        secret: !!process.env.BETTER_AUTH_SECRET,
+        url: process.env.BETTER_AUTH_URL,
+    });
+});
 app.post("/api/auth/register", async (req, res) => {
     console.log(">>> [REG_PROXY] START:", req.body?.email);
     res.setHeader('Content-Type', 'application/json');
