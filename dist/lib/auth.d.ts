@@ -5,6 +5,13 @@ export declare const auth: import("better-auth").Auth<{
         level: "debug";
     };
     trustedOrigins: string[];
+    advanced: {
+        defaultCookieAttributes: {
+            sameSite: "none";
+            secure: true;
+            partitioned: true;
+        };
+    };
     user: {
         additionalFields: {
             role: {

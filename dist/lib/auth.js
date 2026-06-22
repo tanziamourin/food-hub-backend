@@ -22,6 +22,13 @@ export const auth = betterAuth({
     },
     // baseURL: process.env.BETTER_AUTH_URL,
     trustedOrigins: config.trusted_origins,
+    advanced: {
+        defaultCookieAttributes: {
+            sameSite: "none",
+            secure: true,
+            partitioned: true, // Chrome-এর CHIPS policy-র জন্য, না দিলেও কাজ করবে কিন্তু future-proof
+        },
+    },
     user: {
         additionalFields: {
             role: { type: "string" },

@@ -30,7 +30,7 @@ advanced: {
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,
-      partitioned: true, // Chrome-এর CHIPS policy-র জন্য, না দিলেও কাজ করবে কিন্তু future-proof
+      // partitioned: true, 
       }, },
   user: {
     additionalFields: {
