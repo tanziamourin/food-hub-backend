@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 export const auth = betterAuth({
-    //  secret: process.env.BETTER_AUTH_SECRET,
+    secret: config.better_auth.secret,
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
