@@ -35,11 +35,11 @@ export const auth = betterAuth({
     },
   },
 
-  session: {
-    additionalFields: {
-      role: { type: "string" },
-    },
-  },
+  // session: {
+  //   additionalFields: {
+  //     role: { type: "string" },
+  //   },
+  // },
 
   emailAndPassword: {
     enabled: true,
