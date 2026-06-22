@@ -18,11 +18,13 @@ import { adminRouter } from "./modules/admin/admin.route";
 import { getMyProfile } from "./modules/customer/user.controller";
 import { categoryRouter } from "./modules/category/category.routes";
 import { providerProfileRouter } from "./modules/provider/profile/provider.profile.router";
+import { config } from "./config";
 
 const app = express();
 
 /* ================= CORS ================= */
 const allowedOrigins = [
+  config.app_url,
   "http://localhost:3000",
   "https://food-hub-frontend-ten.vercel.app",
 ];

@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import nodemailer from "nodemailer";
 import { oAuthProxy } from "better-auth/plugins";
+import { config } from "../config";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -15,19 +16,16 @@ const transporter = nodemailer.createTransport({
 });
 
 export const auth = betterAuth({
-   secret: process.env.BETTER_AUTH_SECRET,
+  //  secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
  logger: {
     level: "debug",
   },
-  baseURL: process.env.BETTER_AUTH_URL,
+  // baseURL: process.env.BETTER_AUTH_URL,
 
-  trustedOrigins: [
-    "http://localhost:3000",
-    "https://food-hub-frontend-ten.vercel.app",
-  ],
+  trustedOrigins: config.trusted_origins,
 
   user: {
     additionalFields: {
@@ -37,53 +35,57 @@ export const auth = betterAuth({
     },
   },
 
-  session: {
-    additionalFields: {
-      role: { type: "string" },
-    },
-  },
+  // session: {
+  //   additionalFields: {
+  //     role: { type: "string" },
+  //   },
+  // },
 
   emailAndPassword: {
     enabled: true,
-    autoSignIn: true,
+    autoSignIn: false,
     requireEmailVerification: false,
   },
 
   emailVerification: {
-    sendOnSignUp: true,
+    sendOnSignUp: false,
     autoSignInAfterVerification: true,
 
     sendVerificationEmail: async ({ user, url }) => {
+     try { 
       await transporter.sendMail({
         from: `"Food Hub" <food-hub@gmail.com>`,
         to: user.email!,
         subject: "Verify your email",
         html: `<a href="${url}">Verify Email</a>`,
       });
-    },
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+    }
   },
+},
 
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackUrl: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
-    },
-  },
+  // socialProviders: {
+  //   google: {
+  //     clientId: process.env.GOOGLE_CLIENT_ID!,
+  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  //     callbackUrl: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
+  //   },
+  // },
 
-  advanced: {
-    cookies: {
-      session_token: {
-        name: "session_token",
-        attributes: {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none", 
-          path: "/",
-        },
-      },
-    },
-  },
+  // advanced: {
+  //   cookies: {
+  //     session_token: {
+  //       name: "session_token",
+  //       attributes: {
+  //         httpOnly: true,
+  //         secure: true,
+  //         sameSite: "none", 
+  //         path: "/",
+  //       },
+  //     },
+  //   },
+  // },
 
-  plugins: [ oAuthProxy()],
+  // plugins: [ oAuthProxy()],
 });

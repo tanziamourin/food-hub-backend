@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import nodemailer from "nodemailer";
+import { oAuthProxy } from "better-auth/plugins";
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -31,11 +32,11 @@ export const auth = betterAuth({
             status: { type: "string" },
         },
     },
-    // session: {
-    //   additionalFields: {
-    //     role: { type: "string" },
-    //   },
-    // },
+    session: {
+        additionalFields: {
+            role: { type: "string" },
+        },
+    },
     emailAndPassword: {
         enabled: true,
         autoSignIn: true,
@@ -61,17 +62,18 @@ export const auth = betterAuth({
         },
     },
     advanced: {
-    // cookies: {
-    //   session_token: {
-    //     name: "session_token",
-    //     attributes: {
-    //       httpOnly: true,
-    //       secure: true,
-    //       sameSite: "none", // required for cross-domain
-    //     },
-    //   },
-    // },
+        cookies: {
+            session_token: {
+                name: "session_token",
+                attributes: {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "none",
+                    path: "/",
+                },
+            },
+        },
     },
-    plugins: [],
+    plugins: [oAuthProxy()],
 });
 //# sourceMappingURL=auth.js.map

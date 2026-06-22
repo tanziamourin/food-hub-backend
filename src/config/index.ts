@@ -19,8 +19,8 @@ export const config = {
         ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(",") : [])
     ].filter(Boolean) as string[],
     smtp: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.APP_USER,
+        pass: process.env.APP_PASS,
         host: process.env.SMTP_HOST || "smtp.gmail.com",
         port: Number(process.env.SMTP_PORT) || 587,
     },
