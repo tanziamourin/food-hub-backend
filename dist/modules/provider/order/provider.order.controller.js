@@ -1,4 +1,4 @@
-import { ProviderOrderService } from "./provider.order.service.js";
+import { ProviderOrderService } from "./provider.order.service";
 export const getProviderOrders = async (req, res) => {
     const providerId = req.user.id;
     const orders = await ProviderOrderService.getProviderOrders(providerId);

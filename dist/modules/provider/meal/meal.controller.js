@@ -1,4 +1,4 @@
-import { MealService } from "./meal.service.js";
+import { MealService } from "./meal.service";
 // ✅ PUBLIC
 export const getMeals = async (req, res) => {
     try {

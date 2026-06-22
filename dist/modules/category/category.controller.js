@@ -1,4 +1,4 @@
-import { CategoryService } from "./category.service.js";
+import { CategoryService } from "./category.service";
 const create = async (req, res) => {
     const result = await CategoryService.create(req.body);
     res.status(201).json(result);

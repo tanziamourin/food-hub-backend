@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getDashboardStats, getProviders, getUsers, updateUserRole, updateUserStatus, } from "./admin.controller.js";
-import authorize, { UserRole } from "../../middleware/auth.js";
+import { getDashboardStats, getProviders, getUsers, updateUserRole, updateUserStatus, } from "./admin.controller";
+import authorize, { UserRole } from "../../middleware/auth";
 const router = Router();
 // Admin  routes
 router.use(authorize(UserRole.ADMIN));

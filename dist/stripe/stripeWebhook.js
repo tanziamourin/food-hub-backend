@@ -1,5 +1,5 @@
-import { stripe } from "../stripe/stripe.service.js";
-import { prisma } from "../lib/prisma.js";
+import { stripe } from "../stripe/stripe.service";
+import { prisma } from "../lib/prisma";
 export const stripeWebhook = async (req, res) => {
     const sig = req.headers["stripe-signature"];
     let event;

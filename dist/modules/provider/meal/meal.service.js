@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma";
 const createMeal = async (userId, data) => {
     let provider = await prisma.providerProfile.findUnique({
         where: { userId },

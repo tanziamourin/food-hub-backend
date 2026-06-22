@@ -1,6 +1,6 @@
-import { UserService } from "./user.service.js";
-import sendResponse from "../../helper/sendResponse.js";
-import catchAsync from "../../helper/catchAsync.js";
+import { UserService } from "./user.service";
+import sendResponse from "../../helper/sendResponse";
+import catchAsync from "../../helper/catchAsync";
 export const getMyProfile = catchAsync(async (req, res) => {
     const user = req.user;
     if (!user) {

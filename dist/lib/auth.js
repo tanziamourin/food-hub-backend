@@ -1,8 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { prisma } from "./prisma.js";
+import { prisma } from "./prisma";
 import nodemailer from "nodemailer";
-import { oAuthProxy } from "better-auth/plugins";
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -13,10 +12,11 @@ const transporter = nodemailer.createTransport({
     },
 });
 export const auth = betterAuth({
+    secret: process.env.BETTER_AUTH_SECRET,
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
-    baseURL: process.env.APP_URL,
+    baseURL: process.env.BETTER_AUTH_URL,
     trustedOrigins: [
         "http://localhost:3000",
         "https://food-hub-frontend-ten.vercel.app",
@@ -28,14 +28,14 @@ export const auth = betterAuth({
             status: { type: "string" },
         },
     },
-    session: {
-        additionalFields: {
-            role: { type: "string" },
-        },
-    },
+    // session: {
+    //   additionalFields: {
+    //     role: { type: "string" },
+    //   },
+    // },
     emailAndPassword: {
         enabled: true,
-        autoSignIn: false,
+        autoSignIn: true,
         requireEmailVerification: false,
     },
     emailVerification: {
@@ -54,21 +54,21 @@ export const auth = betterAuth({
         google: {
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackUrl: `${process.env.APP_URL}/api/auth/callback/google`,
+            callbackUrl: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
         },
     },
     advanced: {
-        cookies: {
-            session_token: {
-                name: "session_token",
-                attributes: {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: "none", // required for cross-domain
-                },
-            },
-        },
+    // cookies: {
+    //   session_token: {
+    //     name: "session_token",
+    //     attributes: {
+    //       httpOnly: true,
+    //       secure: true,
+    //       sameSite: "none", // required for cross-domain
+    //     },
+    //   },
+    // },
     },
-    plugins: [oAuthProxy()],
+    plugins: [],
 });
 //# sourceMappingURL=auth.js.map

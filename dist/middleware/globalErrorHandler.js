@@ -1,7 +1,7 @@
-// import { Prisma } from "../../generated/prisma/client.js";
+// import { Prisma } from "../../generated/prisma/client";
 import { ZodError } from "zod";
-import { Prisma } from "../generated/client/client.js";
-// import { Prisma } from "../generated/client.js";
+import { Prisma } from "../generated/client/client";
+// import { Prisma } from "../generated/client";
 function errorHandler(err, req, res, next) {
     let statusCode = err.statusCode || err.status || 500;
     let message = err.message || "Internal Server Error";

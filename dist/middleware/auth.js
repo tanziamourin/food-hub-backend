@@ -1,4 +1,4 @@
-import { auth } from "../lib/auth.js";
+import { auth } from "../lib/auth";
 export var UserRole;
 (function (UserRole) {
     UserRole["ADMIN"] = "ADMIN";
@@ -9,7 +9,14 @@ const authorize = (...roles) => {
     return async (req, res, next) => {
         try {
             // ✅ FIX: correct headers format
-            const session = await auth.api.getSession({ headers: req.headers });
+            //    const session = await auth.api.getSession({
+            //   headers: Object.fromEntries(
+            //     Object.entries(req.headers).map(([k, v]) => [k, v as string])
+            //   ) as any,
+            // });
+            const session = await auth.api.getSession({
+                headers: req.headers,
+            });
             if (!session || !session.user) {
                 return res.status(401).json({ message: "Unauthorized" });
             }

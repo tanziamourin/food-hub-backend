@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma";
 const getProviderOrders = async (userId) => {
     const provider = await prisma.providerProfile.findUnique({
         where: { userId },

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { getMyProfile, updateMyProfile } from "./user.controller.js";
-// import authMiddleware from "../../middleware/auth.js";
-import authorize from "../../middleware/auth.js";
+import { getMyProfile, updateMyProfile } from "./user.controller";
+// import authMiddleware from "../../middleware/auth";
+import authorize from "../../middleware/auth";
 const router = Router();
 // Get own profile
 router.get("/me", authorize(), getMyProfile);

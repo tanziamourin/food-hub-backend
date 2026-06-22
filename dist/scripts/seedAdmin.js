@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { prisma } from "../lib/prisma.js";
-import { auth } from "../lib/auth.js";
+import { prisma } from "../lib/prisma";
+import { auth } from "../lib/auth";
 async function seedAdmin() {
     console.log("Admin Seeding Started ");
     const adminEmail = process.env.ADMIN_EMAIL || "admin@foodhub.com";

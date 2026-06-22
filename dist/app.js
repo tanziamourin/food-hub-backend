@@ -1,44 +1,74 @@
 import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth.js";
-import { prisma } from "./lib/prisma.js";
+import { auth } from "./lib/auth";
+import { prisma } from "./lib/prisma";
 // Middleware
-import errorHandler from "./middleware/globalErrorHandler.js";
-import { notFound } from "./middleware/notFound.js";
-import authMiddleware from "./middleware/auth.js";
+import errorHandler from "./middleware/globalErrorHandler";
+import { notFound } from "./middleware/notFound";
+import authMiddleware from "./middleware/auth";
 // Routes
-import { userRouter } from "./modules/customer/user.route.js";
-import { mealsRouter } from "./modules/provider/meal/meal.routes.js";
-import { providerOrderRouter } from "./modules/provider/order/provider.order.routes.js";
-import { orderRouter } from "./modules/customer/order/order.routes.js";
-import { adminRouter } from "./modules/admin/admin.route.js";
-import { getMyProfile } from "./modules/customer/user.controller.js";
-import { categoryRouter } from "./modules/category/category.routes.js";
-import { providerProfileRouter } from "./modules/provider/profile/provider.profile.router.js";
+import { userRouter } from "./modules/customer/user.route";
+import { mealsRouter } from "./modules/provider/meal/meal.routes";
+import { providerOrderRouter } from "./modules/provider/order/provider.order.routes";
+import { orderRouter } from "./modules/customer/order/order.routes";
+import { adminRouter } from "./modules/admin/admin.route";
+import { getMyProfile } from "./modules/customer/user.controller";
+import { categoryRouter } from "./modules/category/category.routes";
+import { providerProfileRouter } from "./modules/provider/profile/provider.profile.router";
 const app = express();
 /* ================= CORS ================= */
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://food-hub-frontend-ten.vercel.app",
+];
 app.use(cors({
-    origin: [
-        "http://localhost:3000",
-        "https://food-hub-frontend-ten.vercel.app",
-    ],
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 }));
+/* 🔥 FIX: Preflight handler (IMPORTANT) */
+app.options("*", cors());
 app.use((req, res, next) => {
     if (req.method === "OPTIONS") {
-        return res.sendStatus(200);
+        return res.sendStatus(204);
     }
     next();
 });
 /* ================= BODY ================= */
 app.use(express.json());
-/* ================= ROUTES ================= */
-// 🔐 Better-auth handler
+/* ================= ROOT ================= */
+app.get("/", (_req, res) => {
+    res.send("Food Hub Backend is running!");
+});
+/* ================= AUTH (IMPORTANT ORDER) ================= */
 app.use("/api/auth", toNodeHandler(auth));
-// 🔐 Auth protected route (PUT THIS BEFORE auth handler)
-app.get("/api/auth/me", authMiddleware(), getMyProfile);
-/* ================= CUSTOM AUTH ================= */
+app.get("/api/test-session", async (req, res) => {
+    console.log("COOKIE:", req.headers.cookie);
+    const session = await auth.api.getSession({
+        headers: req.headers,
+    });
+    console.log("SESSION:", session);
+    return res.json({
+        cookie: req.headers.cookie || null,
+        session,
+    });
+});
+app.get("/debug-auth", async (req, res) => {
+    const count = await prisma.session.count();
+    res.json({
+        hasSecret: !!process.env.BETTER_AUTH_SECRET,
+        sessionCount: count,
+    });
+});
+/* ================= CUSTOM AUTH ROUTES ================= */
 // Register
 app.post("/api/auth/register", async (req, res) => {
     try {
@@ -59,6 +89,7 @@ app.post("/api/auth/register", async (req, res) => {
                 session: data.session || null,
             });
         }
+        console.log("SIGNUP RESULT =", result);
         return res.json(result);
     }
     catch (err) {
@@ -79,6 +110,7 @@ app.post("/api/auth/login", async (req, res) => {
                 data: { emailVerified: true },
             });
         }
+        console.log("RESULT:", result);
         return res.json(result);
     }
     catch (err) {
@@ -97,10 +129,8 @@ app.use("/api/providers", providerProfileRouter);
 app.use("/api/provider/meals", mealsRouter);
 app.use("/api/provider/orders", providerOrderRouter);
 app.use("/api/admin", adminRouter);
-/* ================= ROOT ================= */
-app.get("/", (_req, res) => {
-    res.send("Food Hub Backend is running!");
-});
+/* ================= PROFILE ================= */
+app.get("/api/auth/me", authMiddleware(), getMyProfile);
 /* ================= ERROR HANDLING ================= */
 app.use(notFound);
 app.use(errorHandler);

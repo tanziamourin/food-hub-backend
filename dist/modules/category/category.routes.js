@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { CategoryController } from "./category.controller.js";
-import authorize, { UserRole } from "../../middleware/auth.js";
+import { CategoryController } from "./category.controller";
+import authorize, { UserRole } from "../../middleware/auth";
 const router = Router();
 router.post("/", authorize(UserRole.ADMIN), CategoryController.create);
 router.get("/", CategoryController.getAll);

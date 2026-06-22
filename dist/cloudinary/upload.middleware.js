@@ -1,7 +1,7 @@
 // cloudinary/upload.middleware.ts
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "./cloudinary.js";
+import cloudinary from "./cloudinary";
 const storage = new CloudinaryStorage({
     cloudinary,
     params: async (req, file) => {

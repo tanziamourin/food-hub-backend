@@ -1,5 +1,5 @@
-import { prisma } from "../../../lib/prisma.js";
-import { createPaymentIntent } from "../../../stripe/stripe.service.js";
+import { prisma } from "../../../lib/prisma";
+import { createPaymentIntent } from "../../../stripe/stripe.service";
 export const createOrderIntoDB = async (userId, payload) => {
     const meals = await prisma.meal.findMany({
         where: { id: { in: payload.items.map((i) => i.mealId) } },

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import authorize, { UserRole } from "../../../middleware/auth.js";
-import { createMeal, getMeals, getMeal, updateMeal, deleteMeal, } from "./meal.controller.js";
+import authorize, { UserRole } from "../../../middleware/auth";
+import { createMeal, getMeals, getMeal, updateMeal, deleteMeal, } from "./meal.controller";
 const router = Router();
 // public
 router.get("/", getMeals);

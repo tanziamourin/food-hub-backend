@@ -1,5 +1,5 @@
-import { ProviderProfileService } from "./provider.profile.service.js";
-import { updateProviderProfileSchema } from "./provider.profile.validation.js";
+import { ProviderProfileService } from "./provider.profile.service";
+import { updateProviderProfileSchema } from "./provider.profile.validation";
 // GET LOGGED-IN PROVIDER PROFILE
 export const getProviderProfile = async (req, res) => {
     try {

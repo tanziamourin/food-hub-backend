@@ -1,5 +1,5 @@
-import { AdminService } from "./admin.service.js";
-import { UserRole } from "../../middleware/auth.js";
+import { AdminService } from "./admin.service";
+import { UserRole } from "../../middleware/auth";
 export const getUsers = async (_req, res) => {
     try {
         const users = await AdminService.getAllUsers();

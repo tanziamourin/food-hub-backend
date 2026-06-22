@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
     "seed:admin": "npx tsx src/scripts/seedAdmin.ts",
-    "build": "prisma generate && tsc && node src/scripts/fix-imports.js",
+    "build": "prisma generate && tsc",
     "build:tsup": "tsup",
     "start": "node dist/server.js",
     "lint": "eslint ./src/**/*",

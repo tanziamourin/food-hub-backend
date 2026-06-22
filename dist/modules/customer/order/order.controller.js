@@ -1,5 +1,5 @@
-import * as OrderService from "./order.service.js";
-import { createOrderIntoDB } from "./order.service.js";
+import * as OrderService from "./order.service";
+import { createOrderIntoDB } from "./order.service";
 // export const createOrder = async (req: Request, res: Response) => {
 //   const result = await OrderService.createOrderIntoDB(
 //     req.user!.id,

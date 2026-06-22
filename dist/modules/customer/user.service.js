@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../../lib/prisma";
 export const UserService = {
     getProfile: async (id) => {
         return prisma.user.findUnique({

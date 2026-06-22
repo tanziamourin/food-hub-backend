@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../../lib/prisma";
 export const AdminService = {
     getAllUsers: async () => {
         return prisma.user.findMany({

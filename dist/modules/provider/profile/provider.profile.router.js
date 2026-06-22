@@ -1,7 +1,7 @@
 import { Router } from "express";
-import authorize, { UserRole } from "../../../middleware/auth.js";
-import { getProviderProfile, updateProviderProfile, getProvider, getAllProviders, } from "./provider.profile.controller.js";
-import { upload } from "../../../cloudinary/upload.middleware.js";
+import authorize, { UserRole } from "../../../middleware/auth";
+import { getProviderProfile, updateProviderProfile, getProvider, getAllProviders, } from "./provider.profile.controller";
+import { upload } from "../../../cloudinary/upload.middleware";
 const router = Router();
 // PUBLIC ROUTES
 router.get("/", getAllProviders);
