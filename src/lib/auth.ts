@@ -28,8 +28,10 @@ export const auth = betterAuth({
   trustedOrigins: config.trusted_origins,
 advanced: {
     defaultCookieAttributes: {
+      httpOnly: true,
       sameSite: "none",
       secure: true,
+      path: "/",
       // partitioned: true, 
       }, },
   user: {
