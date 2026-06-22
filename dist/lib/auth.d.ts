@@ -1,6 +1,9 @@
 export declare const auth: import("better-auth").Auth<{
     secret: string | undefined;
     database: (options: import("better-auth").BetterAuthOptions) => import("better-auth").DBAdapter<import("better-auth").BetterAuthOptions>;
+    logger: {
+        level: "debug";
+    };
     baseURL: string | undefined;
     trustedOrigins: string[];
     user: {

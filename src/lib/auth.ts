@@ -37,11 +37,11 @@ export const auth = betterAuth({
     },
   },
 
-  // session: {
-  //   additionalFields: {
-  //     role: { type: "string" },
-  //   },
-  // },
+  session: {
+    additionalFields: {
+      role: { type: "string" },
+    },
+  },
 
   emailAndPassword: {
     enabled: true,
@@ -72,17 +72,18 @@ export const auth = betterAuth({
   },
 
   advanced: {
-    // cookies: {
-    //   session_token: {
-    //     name: "session_token",
-    //     attributes: {
-    //       httpOnly: true,
-    //       secure: true,
-    //       sameSite: "none", // required for cross-domain
-    //     },
-    //   },
-    // },
+    cookies: {
+      session_token: {
+        name: "session_token",
+        attributes: {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none", 
+          path: "/",
+        },
+      },
+    },
   },
 
-  plugins: [],
+  plugins: [ oAuthProxy()],
 });
