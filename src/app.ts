@@ -58,6 +58,11 @@ app.use(express.json());
 app.get("/", (_req, res) => {
   res.send("Food Hub Backend is running!");
 });
+
+/* ================= AUTH (IMPORTANT ORDER) ================= */
+app.use("/api/auth", toNodeHandler(auth));
+
+
 app.get("/api/test-session", async (req, res) => {
   console.log("COOKIE:", req.headers.cookie);
 
@@ -80,9 +85,6 @@ app.get("/debug-auth", async (req, res) => {
     sessionCount: count,
   });
 });
-/* ================= AUTH (IMPORTANT ORDER) ================= */
-app.use("/api/auth", toNodeHandler(auth));
-
 /* ================= CUSTOM AUTH ROUTES ================= */
 
 // Register
