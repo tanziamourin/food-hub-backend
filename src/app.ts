@@ -21,7 +21,7 @@ import { providerProfileRouter } from "./modules/provider/profile/provider.profi
 import { config } from "./config";
 
 const app = express();
-app.set("trust proxy", 1);
+
 /* ================= CORS ================= */
 const allowedOrigins = [
   config.app_url,
@@ -142,12 +142,6 @@ app.use(express.json());
 //     });
 //   }
 // });
-app.get("/debug-env", (req, res) => {
-  res.json({
-    secret: !!process.env.BETTER_AUTH_SECRET,
-    url: process.env.BETTER_AUTH_URL,
-  });
-});
 
 /* ================= PROFILE ================= */
 app.get("/api/auth/me", authMiddleware(), getMyProfile);
@@ -217,6 +211,12 @@ app.get("/api/auth/me", authMiddleware(), getMyProfile);
 //         });
 //     }
 // });
+app.get("/debug-env", (req, res) => {
+  res.json({
+    secret: !!process.env.BETTER_AUTH_SECRET,
+    url: process.env.BETTER_AUTH_URL,
+  });
+});
 
 /* ================= AUTH (IMPORTANT ORDER) ================= */
 app.use("/api/auth", toNodeHandler(auth));

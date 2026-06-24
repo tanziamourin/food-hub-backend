@@ -1,3 +1,4 @@
+console.log("API INDEX VERSION 999");
 var __defProp = Object.defineProperty;
 var __export = (target, all) => {
   for (var name in all)

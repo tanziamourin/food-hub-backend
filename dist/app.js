@@ -17,6 +17,7 @@ import { categoryRouter } from "./modules/category/category.routes";
 import { providerProfileRouter } from "./modules/provider/profile/provider.profile.router";
 import { config } from "./config";
 const app = express();
+app.set("trust proxy", 1);
 /* ================= CORS ================= */
 const allowedOrigins = [
     config.app_url,

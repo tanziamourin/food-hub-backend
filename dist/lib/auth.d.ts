@@ -7,8 +7,10 @@ export declare const auth: import("better-auth").Auth<{
     trustedOrigins: string[];
     advanced: {
         defaultCookieAttributes: {
+            httpOnly: true;
             sameSite: "none";
             secure: true;
+            path: string;
         };
     };
     user: {
