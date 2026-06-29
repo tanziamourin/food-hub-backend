@@ -206,7 +206,7 @@ export type MealGroupByOutputType = {
   _max: MealMaxAggregateOutputType | null
 }
 
-type GetMealGroupByPayload<T extends MealGroupByArgs> = Prisma.PrismaPromise<
+export type GetMealGroupByPayload<T extends MealGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<MealGroupByOutputType, T['by']> &
       {
@@ -1607,6 +1607,11 @@ export type MealFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Skip the first `n` Meals.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Meals.
+   */
   distinct?: Prisma.MealScalarFieldEnum | Prisma.MealScalarFieldEnum[]
 }
 
