@@ -1,10 +1,10 @@
 export declare const auth: import("better-auth").Auth<{
-    secret: any;
+    secret: string | undefined;
     database: (options: import("better-auth").BetterAuthOptions) => import("better-auth").DBAdapter<import("better-auth").BetterAuthOptions>;
     logger: {
         level: "debug";
     };
-    trustedOrigins: any;
+    trustedOrigins: string[];
     advanced: {
         defaultCookieAttributes: {
             httpOnly: true;

@@ -3,11 +3,11 @@
     "rootDir": ".",
     "outDir": "./dist",
 
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
 
-    "lib": ["ESNext"],
+    "lib": ["esnext"],
     "types": ["node"],
 
     "sourceMap": true,
@@ -16,22 +16,16 @@
 
     "strict": true,
     "esModuleInterop": true,
-
-    "jsx": "react-jsx",
+    "skipLibCheck": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    "skipLibCheck": true
+    "exactOptionalPropertyTypes": true
   },
-
   "include": [
     "src/**/*",
     "api/**/*"
   ],
-
   "exclude": [
     "node_modules",
     "dist"

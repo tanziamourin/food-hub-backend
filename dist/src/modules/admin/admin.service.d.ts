@@ -1,14 +1,56 @@
 import { Role, UserStatus } from "../../generated/client/enums";
 export declare const AdminService: {
-    getAllUsers: () => Promise<any>;
-    getAllProviders: () => Promise<any>;
-    updateUserStatus: (id: string, status: UserStatus) => Promise<any>;
-    getDashboardStats: () => Promise<{
-        users: any;
-        providers: any;
-        meals: any;
-        orders: any;
+    getAllUsers: () => Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        email: string;
+        role: Role;
+        status: UserStatus;
+    }[]>;
+    getAllProviders: () => Promise<({
+        user: {
+            name: string;
+            email: string;
+        };
+    } & {
+        id: string;
+        phone: string | null;
+        userId: string;
+        description: string | null;
+        shopName: string | null;
+        address: string | null;
+        logo: string | null;
+    })[]>;
+    updateUserStatus: (id: string, status: UserStatus) => Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        emailVerified: boolean;
+        image: string | null;
+        role: Role;
+        phone: string | null;
+        status: UserStatus;
     }>;
-    updateUserRole: (userId: string, role: Role) => Promise<any>;
+    getDashboardStats: () => Promise<{
+        users: number;
+        providers: number;
+        meals: number;
+        orders: number;
+    }>;
+    updateUserRole: (userId: string, role: Role) => Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        emailVerified: boolean;
+        image: string | null;
+        role: Role;
+        phone: string | null;
+        status: UserStatus;
+    }>;
 };
 //# sourceMappingURL=admin.service.d.ts.map
