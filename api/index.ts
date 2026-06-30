@@ -1,15 +1,4 @@
-// import app from "../src/app"; 
-// import { createServer } from "http";
-
-// import app from "../src/app";
-
-// const server = createServer(app);
-
-// export default server;
-
-
-
-// export default app;
-import app from "../src/app.js";
+// api/index.ts
+import app from "../src/app";
 
 export default app;
