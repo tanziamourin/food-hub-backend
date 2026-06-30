@@ -1,1 +1,0 @@
-{"version":3,"file":"catchAsync.d.ts","sourceRoot":"","sources":["../../src/helper/catchAsync.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,OAAO,EAAE,cAAc,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAE1E,QAAA,MAAM,UAAU,GAAI,IAAI,cAAc,MAC1B,KAAK,OAAO,EAAE,KAAK,QAAQ,EAAE,MAAM,YAAY,SAG1D,CAAC;AAEF,eAAe,UAAU,CAAC"}
